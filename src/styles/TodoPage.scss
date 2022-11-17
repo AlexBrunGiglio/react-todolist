@@ -1,0 +1,118 @@
+.todo-content {
+
+    .todo-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        position: relative;
+
+        input {
+            border: none;
+            border-radius: 10px;
+            height: 40px;
+            font-size: 24px;
+
+            &:first-child {
+                width: 60px;
+                height: 60px;
+                text-align: center;
+                border: 1px solid rgb(232, 232, 232);
+                cursor: pointer;
+            }
+
+            &:nth-child(2) {
+                width: 500px;
+                font-weight: 700;
+                padding: 30px 10px;
+            }
+        }
+
+        .picker {
+            position: absolute;
+            left: 0px;
+            top: 100px;
+        }
+    }
+
+    .todo-description {
+        margin-top: 40px;
+
+        textarea {
+            border-radius: 10px;
+            border: 1px solid rgb(232, 232, 232);
+            padding: 20px;
+            width: 80%;
+        }
+    }
+
+    .todo-checkbox {
+
+        .todo-checkbox-header {
+            display: flex;
+            align-items: center;
+            column-gap: 20px;
+
+            button {
+                border: 1px solid rgb(232, 232, 232);
+                padding: 5px 10px;
+                border-radius: 5px;
+                background-color: transparent;
+                cursor: pointer;
+            }
+        }
+
+        .checkboxs {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 20px;
+
+            .check {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                border: 1px solid rgb(232, 232, 232);
+                border-radius: 10px;
+                width: 80%;
+                column-gap: 40px;
+                padding: 20px;
+
+
+                .checkbox-text {
+                    p {
+                        margin: 0;
+                        padding: 0;
+
+                        &:first-child {
+                            font-size: 18px;
+                        }
+
+                        &:nth-child(2) {
+                            font-size: 14px;
+                        }
+
+                    }
+
+                    .tags {
+                        display: flex;
+                        align-items: center;
+                        column-gap: 10px;
+                        padding: 10px 0;
+
+                        span {
+                            font-size: 12px;
+                            background-color: lightblue;
+                            padding: 5px 10px;
+                            border-radius: 10px;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
