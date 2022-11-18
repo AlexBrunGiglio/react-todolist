@@ -3,12 +3,19 @@ import './App.scss';
 import LeftMenu from './components/LeftMenu';
 import Home from './pages/Home';
 import TodoPage from './pages/TodoPage';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
-    <LeftMenu>
-      <TodoPage></TodoPage>
-    </LeftMenu>
+    <BrowserRouter>
+      <LeftMenu>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/new' element={<TodoPage />} />
+          <Route path='/todo/:id' element={<TodoPage />} />
+        </Routes>
+      </LeftMenu>
+    </BrowserRouter>
   );
 }
 

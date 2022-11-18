@@ -1,8 +1,9 @@
 export type Todo = {
-    title: string;
-    description?: string;
-    emoji: string;
-    checks: TodoCheckbox[];
+    id: string;
+    title: string | undefined;
+    description?: string | undefined;
+    emoji: string | undefined;
+    checks: TodoCheckbox[] | undefined;
 };
 
 export type TodoCheckbox = {
