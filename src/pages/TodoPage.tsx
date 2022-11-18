@@ -1,28 +1,35 @@
 import '../styles/TodoPage.scss';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Todo, TodoCheckbox } from '../types/todo';
-import { CreateTodo, generateID } from '../helpers/db.service';
+import { CreateTodo, FindTodo, generateID } from '../helpers/db.service';
 import { Modal, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
+import * as Icon from 'react-icons/bs';
+let _id = generateID();
+
 
 const TodoPage = () => {
     const [showPicker, setShowPicker] = useState<boolean>(false);
+
+
     const [_emoji, setEmoji] = useState<string>('');
     const [_title, setTitle] = useState<string>('');
     const [_description, setDescription] = useState<string>('');
-    const [_checks, setChecks] = useState<TodoCheckbox[]>();
+    const [_checks, setChecks] = useState<TodoCheckbox[]>([]);
 
-    const [isCreateMode, setCreatedMode] = useState<boolean>(false);
+    const [isCreateMode, setIsCreateMode] = useState<boolean>(false);
 
     const _cRoute = useLocation();
 
     const [todo, setTodo] = useState<Todo>();
 
-    const _id = generateID();
 
     const [openModal, setOpenModal] = useState(false);
+
+    const navigate = useNavigate();
+    const params = useParams();
 
     // checkbox form 
     const [_cTitle, setCTitle] = useState<string>('');
@@ -32,15 +39,19 @@ const TodoPage = () => {
 
     useEffect(() => {
         if (_cRoute.pathname === '/new') {
-            setCreatedMode(true);
+            setIsCreateMode(true);
+            console.log("🚀 ~ useEffect ~ _id", _id);
             setTodo({ id: _id, title: '', checks: [], emoji: '', description: '' });
+        } else {
+            _id = params['id']!;
+            const getTodo = FindTodo(_id);
+            setTodo(getTodo);
+            setEmoji(getTodo.emoji!);
+            setTitle(getTodo.title!);
+            setDescription(getTodo.description!);
+            setChecks(getTodo.checks! || []);
         }
     }, [_cRoute]);
-
-    useEffect(() => {
-        handleModification();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [_title, _description, _checks, _emoji]);
 
     function handleInputClick() {
         setShowPicker(!showPicker);
@@ -49,16 +60,13 @@ const TodoPage = () => {
     function handleEmojiSelect(e: EmojiClickData) {
         setEmoji(e.emoji);
         setShowPicker(false);
-        handleModification();
     }
 
-    function handleModification() {
-        setTodo({ id: _id, title: _title, checks: _checks, emoji: _emoji, description: _description });
-
-        setTimeout(() => {
-            if (todo?.title && todo.emoji && todo.id)
-                CreateTodo(todo!);
-        }, 2000);
+    function saveTodo() {
+        const newTodo = { id: _id, title: _title, checks: _checks, emoji: _emoji, description: _description };
+        setTodo(newTodo);
+        CreateTodo(newTodo!);
+        navigate('/todo/' + _id);
     }
 
     function submitCheckboxForm(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -66,6 +74,9 @@ const TodoPage = () => {
 
         if (_cTitle == null || _cTitle === '')
             return;
+
+        console.log(todo);
+
 
         const checkbox: TodoCheckbox = {
             order: todo?.checks?.length || 0,
@@ -76,22 +87,26 @@ const TodoPage = () => {
             endDate: _cEndDate,
         };
 
-        const tempArr = _checks;
-        tempArr?.push(checkbox);
-        setChecks(tempArr);
+        setChecks(prevChecks => [...prevChecks, checkbox]);
 
         setCDescription('');
         setCStartDate(new Date());
         setCEndDate(new Date());
         setCTitle('');
+        setIsCreateMode(false);
         setOpenModal(false);
     }
 
     return (
         <div className='todo-content'>
             <div className='todo-header'>
-                <input type='text' onClick={handleInputClick} value={_emoji} onChange={() => { console.log("hello"); }} />
-                <input type='text' placeholder='Entrez un nom' value={_title} onChange={(e) => { setTitle(e.target.value); }} />
+                <div>
+                    <input type='text' onClick={handleInputClick} value={_emoji} onChange={() => { console.log("hello"); }} />
+                    <input type='text' placeholder='Entrez un nom' value={_title} onChange={(e) => { setTitle(e.target.value); }} />
+                </div>
+                <div>
+                    <button onClick={() => saveTodo()}>Enregistrer</button>
+                </div>
                 {showPicker ? <div className='picker'><EmojiPicker width={300} onEmojiClick={(emoji, event) => { handleEmojiSelect(emoji); }}></EmojiPicker></div> : <></>}
             </div>
             <div className='todo-description'>
@@ -105,18 +120,34 @@ const TodoPage = () => {
                 {
                     !isCreateMode ?
                         <div className='checkboxs'>
-                            <div className='check'>
-                                <input type={'checkbox'} />
-                                <div className='checkbox-text'>
-                                    <p><b>Checkbox title</b></p>
-                                    <p>Checkbox description</p>
-                                    <div className='tags'>
-                                        <span>tags 1</span>
-                                        <span>tags 2</span>
-                                        <span>tags 3</span>
-                                    </div>
-                                </div>
-                            </div>
+                            {_checks?.length ?
+                                _checks?.map((x) => {
+                                    console.log("🚀 ~ {_checks?.map ~ x", x);
+                                    console.log("🚀 ~ {_checks?.map ~ _checks", _checks);
+                                    return (
+                                        <div className='check' key={x.label + '' + x.order}>
+                                            <input type={'checkbox'} />
+                                            <div className='checkbox-text'>
+                                                <p><b>{x.label}</b></p>
+                                                <p>{x.description}</p>
+                                                <div className='inline'>
+                                                    <div className='time'>
+                                                        <span className='inline'><Icon.BsFillCalendarEventFill></Icon.BsFillCalendarEventFill> {new Date(x.startDate ?? '').toLocaleDateString()}</span>
+                                                        <span className='inline'><Icon.BsFillCalendarWeekFill></Icon.BsFillCalendarWeekFill> {new Date(x.endDate ?? '').toLocaleDateString()}</span>
+                                                    </div>
+                                                    <div className='tags'>
+                                                        <span>tags 1</span>
+                                                        <span>tags 2</span>
+                                                        <span>tags 3</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                                :
+                                <p>Aucune checklist</p>
+                            }
                         </div>
                         :
                         <></>
@@ -138,6 +169,7 @@ const TodoPage = () => {
             </Modal>
         </div>
     );
+
 };
 
 export default TodoPage;

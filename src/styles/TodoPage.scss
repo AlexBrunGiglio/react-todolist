@@ -3,9 +3,10 @@
     .todo-header {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
         gap: 10px;
         position: relative;
+        width: 80%;
 
         input {
             border: none;
@@ -132,4 +133,20 @@ button {
     border-radius: 5px;
     background-color: transparent;
     cursor: pointer;
+}
+
+.time {
+    display: flex;
+    column-gap: 10px;
+    align-items: center;
+
+    .inline {
+        column-gap: 10px;
+    }
+}
+
+.inline {
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
 }

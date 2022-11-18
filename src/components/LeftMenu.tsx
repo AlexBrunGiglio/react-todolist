@@ -13,11 +13,11 @@ const LeftMenu = ({ children }: props) => {
         <div className='layout'>
             <div className='menu'>
                 <div className='icon'>
-                    <img alt='app-logo' src='https://alexandrebrungiglio.fr/static/media/logo.2f4ffd121f30d0eb7bbd.png' />
+                    <a href='/'>
+                        <img alt='app-logo' src='https://alexandrebrungiglio.fr/static/media/logo.2f4ffd121f30d0eb7bbd.png' />
+                    </a>
                 </div>
-                <a href='/'><Icon.IoIosHome></Icon.IoIosHome> Home</a>
-                {todos.map((x) => { return (<a href={'/todo/' + x.id}>{x.title}</a>); })}
-                {todos.length === 0 ?? <p>Vous n'avez pas encore de liste créée</p>}
+                {todos?.length ? todos?.map((x) => { return (<a key={x.id} href={'/todo/' + x.id}>{x.emoji} {x.title}</a>); }) : <p>Vous n'avez pas encore de liste créée</p>}
                 <div className='fixed-bottom'>
                     <a href='/new'> <Icon.IoMdAdd></Icon.IoMdAdd> New todo</a>
                 </div>

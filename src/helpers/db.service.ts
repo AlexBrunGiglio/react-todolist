@@ -13,17 +13,29 @@ function initTodos() {
 
 export function UpdateTodo(todo: Todo) {
     const todos: Todo[] = JSON.parse(db.getItem(key)!);
+    const index = todos.findIndex(x => x.id === todo.id)!;
     let _todo: Todo = todos.find(x => x.id === todo.id)!;
     _todo = todo;
+    todos[index] = _todo;
+    db.setItem(key, JSON.stringify(todos));
 }
 
 export function CreateTodo(todo: Todo) {
+    if (FindTodo(todo.id)?.id) {
+        UpdateTodo(todo);
+    } else {
+        let todos: Todo[] = JSON.parse(db.getItem(key)!);
+        if (todos == null)
+            initTodos();
+
+        todos.push(todo);
+        db.setItem(key, JSON.stringify(todos));
+    }
+}
+
+export function FindTodo(id: string): Todo {
     const todos: Todo[] = JSON.parse(db.getItem(key)!);
-    if (todos == null)
-        initTodos();
-    todos.push(todo);
-    console.log("🚀 ~ todos", todos);
-    db.setItem(key, JSON.stringify(todos));
+    return todos.find(x => x.id === id)!;
 }
 
 export function generateID(): string {
